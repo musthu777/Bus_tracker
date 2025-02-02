@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bus Stop Finder</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; }
+        .container { width: 50%; margin: auto; }
+        input, button, select { margin: 5px; padding: 8px; }
+    </style>
+</head>
+<body>
+
+    <h2>Bus Stop Finder</h2>
+
+    <div class="container">
+        <!-- Admin Section -->
+        <h3>Admin Panel</h3>
+        <input type="text" id="busStopInput" placeholder="Enter Bus Stop Name">
+        <button onclick="addBusStop()">Add Bus Stop</button>
+        
+        <br>
+        <select id="busStopSelect"></select>
+        <input type="text" id="busNameInput" placeholder="Enter Bus Name">
+        <input type="text" id="busTimeInput" placeholder="Enter Bus Time">
+        <button onclick="addBus()">Add Bus</button>
+
+        <hr>
+
+        <!-- User Section -->
+        <h3>User Panel</h3>
+        <select id="userBusStopSelect" onchange="displayBuses()"></select>
+        <ul id="busList"></ul>
+    </div>
+
+    <script>
+        // Array to store bus stop and bus details
+        let busStops = [];
+
+        // Function to add a new bus stop
+        function addBusStop() {
+            let busStopName = document.getElementById("busStopInput").value;
+            if (busStopName === "") return alert("Enter a bus stop name!");
+            
+            // Add to array
+            busStops.push({ name: busStopName, buses: [] });
+            document.getElementById("busStopInput").value = ""; 
+            updateBusStopDropdowns();
+        }
+
+        // Function to add a bus to a bus stop
+        function addBus() {
+            let busStopName = document.getElementById("busStopSelect").value;
+            let busName = document.getElementById("busNameInput").value;
+            let busTime = document.getElementById("busTimeInput").value;
+
+            if (!busStopName || !busName || !busTime) return alert("Fill all fields!");
+
+            // Find the bus stop and add the bus
+            let stop = busStops.find(stop => stop.name === busStopName);
+            stop.buses.push({ name: busName, time: busTime });
+
+            document.getElementById("busNameInput").value = "";
+            document.getElementById("busTimeInput").value = "";
+            alert("Bus added successfully!");
+        }
+
+        // Function to update dropdowns
+        function updateBusStopDropdowns() {
+            let adminSelect = document.getElementById("busStopSelect");
+            let userSelect = document.getElementById("userBusStopSelect");
+
+            adminSelect.innerHTML = "";
+            userSelect.innerHTML = "";
+
+            busStops.forEach(stop => {
+                let option = document.createElement("option");
+                option.value = stop.name;
+                option.textContent = stop.name;
+                adminSelect.appendChild(option);
+                userSelect.appendChild(option.cloneNode(true));
+            });
+        }
+
+        // Function to display buses at the selected bus stop
+        function displayBuses() {
+            let busStopName = document.getElementById("userBusStopSelect").value;
+            let busList = document.getElementById("busList");
+            busList.innerHTML = "";
+
+            let stop = busStops.find(stop => stop.name === busStopName);
+            if (stop) {
+                stop.buses.forEach(bus => {
+                    let li = document.createElement("li");
+                    li.textContent = `${bus.name} - ${bus.time}`;
+                    busList.appendChild(li);
+                });
+            }
+        }
+    </script>
+</body>
+</html>
